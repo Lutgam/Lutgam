@@ -1,0 +1,1611 @@
+複製
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>春寅食堂 Harutora</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #d4a373;
+            --secondary-color: #fefae0;
+            --accent-color: #606c38;
+            --text-color: #283618;
+            --background-color: #faedcd;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Noto Sans TC", Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding-bottom: 200px;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+
+        .language-select {
+            position: relative;
+            display: inline-block;
+        }
+
+        .language-select select {
+            padding: 0.5rem 1rem 0.5rem 2.5rem;
+            border: none;
+            border-radius: 4px;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            cursor: pointer;
+            appearance: none;
+        }
+
+        .language-icon {
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1rem;
+        }
+
+        .menu-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: bold;
+        }
+
+        .item-price {
+            color: var(--accent-color);
+            font-weight: bold;
+            margin-right: 1rem;
+        }
+
+        .item-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .quantity-control select {
+            padding: 0.25rem 0.5rem;
+            border: none;
+            border-radius: 4px;
+            background-color: var(--accent-color);
+            color: white;
+            cursor: pointer;
+        }
+
+        .cart-icon {
+            position: fixed;
+            right: 20px;
+            bottom: 100px;
+            background-color: var(--primary-color);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .cart-count {
+          position: absolute;
+          top: -5px;
+          right: -5px;
+          background-color: var(--accent-color);
+          color: white;
+          border-radius: 50%;
+          width: 20px;
+          height: 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 12px;
+        }
+
+        .cart-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .cart-content {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            max-height: 80vh;
+            background-color: white;
+            padding: 1rem;
+            border-radius: 1rem 1rem 0 0;
+            overflow-y: auto;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .cart-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .cart-items {
+            margin-bottom: 1rem;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-total {
+            font-weight: bold;
+            text-align: right;
+            margin-top: 1rem;
+        }
+
+        .cart-notice {
+            margin-top: 1rem;
+            text-align: center;
+            font-size: 0.9em;
+            color: var(--text-color);
+        }
+
+        .notice-bar {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            font-size: 0.9em;
+            z-index: 999;
+        }
+
+        button {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button.active {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        button:hover {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        @media (max-width: 600px) {
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* 新增的樣式 */
+        .option-select {
+            display: flex;
+            flex-direction: column;
+            margin-top: 0.5rem;
+        }
+
+        .option-select label {
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .option-select select {
+            padding: 0.5rem;
+            border: 2px solid var(--accent-color);
+            border-radius: 8px;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: background-color 0.3s, border-color 0.3s;
+            font-size: 1rem;
+        }
+
+        .option-select select:hover {
+            background-color: var(--accent-color);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">春寅食堂 harutora</div>
+        <div class="controls">
+            <div class="language-select">
+                <span class="language-icon">🌐</span>
+                <select id="language" onchange="changeLanguage()">
+                    <option value="zh">中文</option>
+                    <option value="en">English</option>
+                    <option value="ja">日本語</option>
+                    <option value="ko">한국어</option>
+                </select>
+            </div>
+            <button onclick="showCategory('spring')" id="btn-spring">主打推薦</button>
+            <button onclick="showCategory('soup')" id="btn-soup">湯品區</button>
+            <button onclick="showCategory('other')" id="btn-other">其他餐點</button>
+        </div>
+    </header>
+
+    <div class="menu-container" id="menu-content"></div>
+
+    <div class="cart-icon" onclick="toggleCart()">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count">0</span>
+    </div>
+
+    <div class="cart-modal" id="cart-modal">
+        <div class="cart-content">
+            <div class="cart-header">
+                <h2>購物車</h2>
+                <button class="cart-close" onclick="toggleCart()">&times;</button>
+            </div>
+            <div class="cart-items" id="cart-items"></div>
+            <div class="cart-total" id="cart-total"></div>
+            <div class="cart-notice" id="cart-notice"></div>
+        </div>
+    </div>
+    <div class="item-controls">
+        <div class="quantity-control">
+            <button onclick="updateQuantity('${item.name}', -1)">-</button>
+            <span id="quantity-${item.name}">0</span>
+            <button onclick="updateQuantity('${item.name}', 1)">+</button>
+        </div>
+    </div>
+    <div class="notice-bar" id="notice-bar">
+        ※用餐須知：若挑食（紅白蘿蔔等），請於點餐時告知。繁忙時段用餐時間限制1小時。用完餐請將餐具放至回收區。
+    </div>
+
+<script>
+    const menuData = {
+        zh: {
+          spring: [
+            { name: "熟成香料咖哩飯+唐揚鶏", price: 200 },
+            { name: "熟成香料咖哩飯+炸火腿", price: 200 },
+            { name: "春寅の毛澤東排骨飯", price: 180 },
+            { name: "泡菜炒豬肉拌飯", price: 180 },
+            { name: "肉很多手撕豬肉飯", price: 160 },
+            { name: "薄脆嫩肩月亮軟骨排飯", price: 160 },
+            { name: "低温泡菜舒肥叉燒飯", price: 160 },
+            { name: "炙燒麻辣豬舌飯", price: 160 },
+            { name: "濃鶏湯泡飯", price: 120 },
+            { name: "極。特濃鶏湯拉麺", price: 270 },
+            { name: "鶏湯魚介二郎拉麺", price: 270 },
+            { name: "熟成香料濃湯咖哩麺", price: 210 },
+            { name: "火辣辣牛豚辣拌麺", price: 170 },
+            { name: "和風辣油頂上冷拌麺", price: 170 },
+            { name: "担担胡麻辣拌麺", price: 130 },
+            { name: "赤味噌担担湯麺", price: 130 },
+            { name: "特濃黒蒜拌麺", price: 130 },
+            { name: "紅油椒香拌麺", price: 130 }
+          ],
+          soup: [
+            {
+              name: "金鶏薬膳食補湯",
+              basePrice: 120,
+              brothOptions: [
+              { name: "鶏腿", price: 0  },
+              { name: "舒肥叉燒(限内用)" , price: 0 },
+              { name: "鶏排骨酥" , price: 0 },
+              { name: "湯餃", price: 0 },
+              { name: "下水", price: 0 },
+              { name: "加購", price: 50 }
+              ],
+              noodlesOptions: [
+                { name: "幻の粗麺", price: 40 },
+                { name: "四角麺", price: 30 },
+                { name: "極細米粉", price: 30 }
+              ]
+            },
+            {
+                name: "濃厚鶏白湯",
+                basePrice: 160,
+                brothOptions: [
+                { name: "鶏腿", price: 0  },
+              { name: "舒肥叉燒(限内用)" , price: 0 },
+              { name: "鶏排骨酥" , price: 0 },
+              { name: "湯餃", price: 0 },
+              { name: "下水", price: 0 },
+              { name: "加購", price: 50 }
+                ],
+                noodlesOptions: [
+                  { name: "幻の粗麺", price: 40 },
+                  { name: "四角麺", price: 30 },
+                  { name: "極細米粉", price: 30 }
+                ]
+              },
+            {
+              name: "熟成醤油厚鶏白湯",
+              basePrice: 170,
+              brothOptions: [
+              { name: "鶏腿", price: 0  },
+              { name: "舒肥叉燒(限内用)" , price: 0 },
+              { name: "鶏排骨酥" , price: 0 },
+              { name: "湯餃", price: 0 },
+              { name: "下水", price: 0 },
+              { name: "加購", price: 50 }
+              ],
+              noodlesOptions: [
+                { name: "幻の粗麺", price: 40 },
+                { name: "四角麺", price: 30 },
+                { name: "極細米粉", price: 30 }
+              ]
+            },
+            {
+              name: "濃香魚介鶏白湯 2.0",
+              basePrice: 190,
+              brothOptions: [
+              { name: "鶏腿", price: 0  },
+              { name: "舒肥叉燒(限内用)" , price: 0 },
+              { name: "鶏排骨酥" , price: 0 },
+              { name: "湯餃", price: 0 },
+              { name: "下水", price: 0 },
+              { name: "加購", price: 50 }
+              ],
+              noodlesOptions: [
+                { name: "幻の粗麺", price: 40 },
+                { name: "四角麺", price: 30 },
+                { name: "極細米粉", price: 30 }
+              ]
+            },
+            {
+              name: "北港冷壓麻油湯",
+              basePrice: 160,
+              brothOptions: [
+              { name: "鶏腿", price: 0  },
+              { name: "舒肥叉燒(限内用)" , price: 0 },
+              { name: "鶏排骨酥" , price: 0 },
+              { name: "湯餃", price: 0 },
+              { name: "下水", price: 0 },
+              { name: "加購", price: 50 }
+              ],
+              noodlesOptions: [
+                { name: "幻の粗麺", price: 40 },
+                { name: "四角麺", price: 30 },
+                { name: "極細米粉", price: 30 }
+              ]
+            },
+            {
+              name: "濃厚鶏白麻油湯",
+              basePrice: 190,
+              brothOptions: [
+              { name: "鶏腿", price: 0  },
+              { name: "舒肥叉燒(限内用)" , price: 0 },
+              { name: "鶏排骨酥" , price: 0 },
+              { name: "湯餃", price: 0 },
+              { name: "下水", price: 0 },
+              { name: "加購", price: 50 }
+              ],
+              noodlesOptions: [
+                { name: "幻の粗麺", price: 40 },
+                { name: "四角麺", price: 30 },
+                { name: "極細米粉", price: 30 }
+              ]
+            },
+            {
+              name: "蒜頭精力湯",
+              basePrice: 150,
+              brothOptions: [
+              { name: "鶏腿", price: 0  },
+              { name: "舒肥叉燒(限内用)" , price: 0 },
+              { name: "鶏排骨酥" , price: 0 },
+              { name: "湯餃", price: 0 },
+              { name: "下水", price: 0 },
+              { name: "加購", price: 50 }
+              ],
+              noodlesOptions: [
+                { name: "幻の粗麺", price: 40 },
+                { name: "四角麺", price: 30 },
+                { name: "極細米粉", price: 30 }
+              ]
+            },
+            {
+              name: "剥皮辣椒鶏白湯",
+              basePrice: 190,
+              brothOptions: [
+              { name: "鶏腿", price: 0  },
+              { name: "舒肥叉燒(限内用)" , price: 0 },
+              { name: "鶏排骨酥" , price: 0 },
+              { name: "湯餃", price: 0 },
+              { name: "下水", price: 0 },
+              { name: "加購", price: 50 }
+              ],
+              noodlesOptions: [
+                { name: "幻の粗麺", price: 40 },
+                { name: "四角麺", price: 30 },
+                { name: "極細米粉", price: 30 }
+              ]
+            },
+            {
+              name: "頂上老火養生濃白湯",
+              basePrice: 250,
+              brothOptions: [
+              { name: "鶏腿", price: 0  },
+              { name: "舒肥叉燒(限内用)" , price: 0 },
+              { name: "鶏排骨酥" , price: 0 },
+              { name: "湯餃", price: 0 },
+              { name: "下水", price: 0 },
+              { name: "加購", price: 50 }
+              ],
+              noodlesOptions: [
+                { name: "幻の粗麺", price: 40 },
+                { name: "四角麺", price: 30 },
+                { name: "極細米粉", price: 30 }
+              ]
+            },
+            {
+              name: "新香辣濃厚鶏白湯",
+              basePrice: 200,
+              brothOptions: [
+              { name: "鶏腿", price: 0  },
+              { name: "舒肥叉燒(限内用)" , price: 0 },
+              { name: "鶏排骨酥" , price: 0 },
+              { name: "湯餃", price: 0 },
+              { name: "下水", price: 0 },
+              { name: "加購", price: 50 }
+              ],
+              noodlesOptions: [
+                { name: "幻の粗麺", price: 40 },
+                { name: "四角麺", price: 30 },
+                { name: "極細米粉", price: 30 }
+              ]
+            },
+            {
+              name: "胡椒豬肚鶏白湯",
+              basePrice: 230,
+              brothOptions: [
+              { name: "鶏腿", price: 0  },
+              { name: "舒肥叉燒(限内用)" , price: 0 },
+              { name: "鶏排骨酥" , price: 0 },
+              { name: "湯餃", price: 0 },
+              { name: "下水", price: 0 },
+              { name: "加購", price: 50 }
+              ],
+              noodlesOptions: [
+                { name: "幻の粗麺", price: 40 },
+                { name: "四角麺", price: 30 },
+                { name: "極細米粉", price: 30 }
+              ]
+            },
+            {
+              name: "多色時蔬湯(健康素)",
+              basePrice: 100,
+              brothOptions: [
+              { name: "時蔬", price: 0 },
+              { name: "加購", price: 50 }
+              ],
+              noodlesOptions: [
+                { name: "幻の粗麺", price: 40 },
+                { name: "四角麺", price: 30 },
+                { name: "極細米粉", price: 30 }
+              ]
+            }
+          ],
+          other: [
+            { name: "鶏油拌飯", price: 30 },
+            { name: "鶏油麺線", price: 30 },
+            { name: "白飯", price: 20 },
+            { name: "糖心蛋", price: 30 },
+            { name: "黑蒜鶏油飯", price: 40 },
+            { name: "香辣鶏油麺線", price: 40 },
+            { name: "和風冷麺線", price: 40 },
+            { name: "麻油麺線", price: 40 },
+            { name: "燙青菜", price: 40 },
+            { name: "鶏油豆芽", price: 40 },
+            { name: "燙高麗菜", price: 40 },
+            { name: "香酥炸皮蛋", price: 40 },
+            { name: "五香豆干", price: 40 },
+            { name: "北港の米血", price: 40 },
+            { name: "古早味彩虹蝦餅", price: 40 },
+            { name: "雲林特厚油豆腐", price: 40 },
+            { name: "百香木瓜", price: 40 },
+            { name: "梅漬蓮藕", price: 40 },
+            { name: "生拌高麗菜", price: 40 },
+            { name: "薑汁番茄", price: 40 },
+            { name: "香辣牛油丁拌飯", price: 40 },
+            { name: "日式炸火腿", price: 40 },
+            { name: "筍干の甘露煮", price: 40 },
+            { name: "剥皮辣椒蒸蛋", price: 50 },
+            { name: "基隆の炸天婦羅", price: 50 },
+            { name: "炸軟絲魷魚漿捲", price: 50 },
+            { name: "傳説の韓式泡菜", price: 50 },
+            { name: "叉燒金豚丼", price: 70 },
+            { name: "舒肥銀豚丼", price: 70 },
+            { name: "小辣辣麻婆丼", price: 70 },
+            { name: "炸鶏排骨酥(無骨)", price: 70 },
+            { name: "赤味噌肉拌豆芽", price: 70 },
+            { name: "麻辣蘿蔔糕", price: 70 },
+            { name: "麻辣米血豆干", price: 70 },
+            { name: "大武山炸魚餃", price: 70 },
+            { name: "小辣辣麻婆豆腐", price: 70 },
+            { name: "香辣鶏油餃", price: 70 },
+            { name: "小魚皮蛋豆腐", price: 70 },
+            { name: "麻辣胗心", price: 80 },
+            { name: "薄脆嫩肩月亮軟骨排", price: 120 },
+            { name: "麻辣喇豬舌", price: 120 },
+            { name: "蘋果汽水", price: 30 },
+            { name: "葡萄汽水", price: 30 },
+            { name: "加鹽沙士", price: 30 },
+            { name: "冬瓜露", price: 40 },
+            { name: "啤酒", price: 100 }
+          ],
+          labels: {
+            spring: "主打推薦",
+            soup: "湯品區",
+            other: "其他餐點",
+            notice: "※用餐須知：若挑食（紅白蘿蔔等），請於點餐時告知。繁忙時段用餐時間限制1小時。用完餐請將餐具放至回收區。",
+            cartNotice: "請將此畫面交由店員點餐並以現金付款。"
+          }
+        },
+        en: {
+          spring: [
+            { name: "Aged Spice Curry Rice + Karaage Chicken", price: 200 },
+            { name: "Aged Spice Curry Rice + Fried Ham", price: 200 },
+            { name: "Spring Mao Zedong Pork Rib Rice", price: 180 },
+            { name: "Kimchi Stir-fried Pork Rice", price: 180 },
+            { name: "Shredded Pork Rice with Lots of Meat", price: 160 },
+            { name: "Crispy Tender Shoulder Moon Soft Bone Rib Rice", price: 160 },
+            { name: "Low Temperature Kimchi Sous Vide Char Siu Rice", price: 160 },
+            { name: "Grilled Spicy Pork Tongue Rice", price: 160 },
+            { name: "Rich Chicken Soup Rice", price: 120 },
+            { name: "Special Rich Chicken Soup Ramen", price: 270 },
+            { name: "Chicken Soup Seafood Jiro Ramen", price: 270 },
+            { name: "Aged Spice Rich Soup Curry Noodles", price: 210 },
+            { name: "Spicy Beef and Pork Stir-fried Noodles", price: 170 },
+            { name: "Japanese Style Spicy Oil Cold Noodles", price: 170 },
+            { name: "Dan Dan Sesame Spicy Noodles", price: 130 },
+            { name: "Red Miso Dan Dan Soup Noodles", price: 130 },
+            { name: "Rich Black Garlic Noodles", price: 130 },
+            { name: "Red Oil Pepper Fragrant Noodles", price: 130 }
+          ],
+          soup: [
+            {
+              name: "Golden Chicken Herbal Soup",
+              basePrice: 120,
+              brothOptions: [
+              { name: "Chicken Leg", price: 0 },
+              { name: "Sous Vide Char Siu (Dine-in Only)", price: 0 },
+              { name: "Chicken Rib Stew", price: 0 },
+              { name: "Dumpling Soup", price: 0 },
+              { name: "Offal", price: 0 },
+              { name: "Extra Purchase", price: 50 }
+              ],
+              noodlesOptions: [
+                { name: "Rare Thick Noodles", price: 40 },
+                { name: "Square Noodles", price: 30 },
+                { name: "Ultra-thin Rice Noodles", price: 30 }
+              ]
+            },
+            {
+                name: "Thick Chicken White Soup",
+                basePrice: 160,
+                brothOptions: [
+                { name: "Chicken Leg", price: 0 },
+                { name: "Sous Vide Char Siu (Dine-in Only)", price: 0 },
+                { name: "Chicken Rib Stew", price: 0 },
+                { name: "Dumpling Soup", price: 0 },
+                { name: "Offal", price: 0 },
+                { name: "Extra Purchase", price: 50 }
+                ],
+                noodlesOptions: [
+                  { name: "Rare Thick Noodles", price: 40 },
+                  { name: "Square Noodles", price: 30 },
+                  { name: "Ultra-thin Rice Noodles", price: 30 }
+                ]
+              },
+            {
+              name: "Aged Soy Sauce Thick Chicken White Soup",
+              basePrice: 170,
+              brothOptions: [
+              { name: "Chicken Leg", price: 0 },
+              { name: "Sous Vide Char Siu (Dine-in Only)", price: 0 },
+              { name: "Chicken Rib Stew", price: 0 },
+              { name: "Dumpling Soup", price: 0 },
+              { name: "Offal", price: 0 },
+              { name: "Extra Purchase", price: 50 }
+              ],
+              noodlesOptions: [
+                { name: "Rare Thick Noodles", price: 40 },
+                { name: "Square Noodles", price: 30 },
+                { name: "Ultra-thin Rice Noodles", price: 30 }
+              ]
+            },
+            {
+              name: "Rich Seafood Chicken White Soup 2.0",
+              basePrice: 190,
+              brothOptions: [
+              { name: "Chicken Leg", price: 0 },
+              { name: "Sous Vide Char Siu (Dine-in Only)", price: 0 },
+              { name: "Chicken Rib Stew", price: 0 },
+              { name: "Dumpling Soup", price: 0 },
+              { name: "Offal", price: 0 },
+              { name: "Extra Purchase", price: 50 }
+              ],
+              noodlesOptions: [
+                { name: "Rare Thick Noodles", price: 40 },
+                { name: "Square Noodles", price: 30 },
+                { name: "Ultra-thin Rice Noodles", price: 30 }
+              ]
+            },
+            {
+              name: "Beigang Cold Pressed Sesame Oil Soup",
+              basePrice: 160,
+              brothOptions: [
+              { name: "Chicken Leg", price: 0 },
+              { name: "Sous Vide Char Siu (Dine-in Only)", price: 0 },
+              { name: "Chicken Rib Stew", price: 0 },
+              { name: "Dumpling Soup", price: 0 },
+              { name: "Offal", price: 0 },
+              { name: "Extra Purchase", price: 50 }
+              ],
+              noodlesOptions: [
+                { name: "Rare Thick Noodles", price: 40 },
+                { name: "Square Noodles", price: 30 },
+                { name: "Ultra-thin Rice Noodles", price: 30 }
+              ]
+            },
+            {
+              name: "Rich Chicken White Sesame Oil Soup",
+              basePrice: 190,
+              brothOptions: [
+              { name: "Chicken Leg", price: 0 },
+              { name: "Sous Vide Char Siu (Dine-in Only)", price: 0 },
+              { name: "Chicken Rib Stew", price: 0 },
+              { name: "Dumpling Soup", price: 0 },
+              { name: "Offal", price: 0 },
+              { name: "Extra Purchase", price: 50 }
+              ],
+              noodlesOptions: [
+                { name: "Rare Thick Noodles", price: 40 },
+                { name: "Square Noodles", price: 30 },
+                { name: "Ultra-thin Rice Noodles", price: 30 }
+              ]
+            },
+            {
+              name: "Garlic Energy Soup",
+              basePrice: 150,
+              brothOptions: [
+              { name: "Chicken Leg", price: 0 },
+              { name: "Sous Vide Char Siu (Dine-in Only)", price: 0 },
+              { name: "Chicken Rib Stew", price: 0 },
+              { name: "Dumpling Soup", price: 0 },
+              { name: "Offal", price: 0 },
+              { name: "Extra Purchase", price: 50 }
+              ],
+              noodlesOptions: [
+                { name: "Rare Thick Noodles", price: 40 },
+                { name: "Square Noodles", price: 30 },
+                { name: "Ultra-thin Rice Noodles", price: 30 }
+              ]
+            },
+            {
+              name: "Peeled Chili Chicken White Soup",
+              basePrice: 190,
+              brothOptions: [
+              { name: "Chicken Leg", price: 0 },
+              { name: "Sous Vide Char Siu (Dine-in Only)", price: 0 },
+              { name: "Chicken Rib Stew", price: 0 },
+              { name: "Dumpling Soup", price: 0 },
+              { name: "Offal", price: 0 },
+              { name: "Extra Purchase", price: 50 }
+              ],
+              noodlesOptions: [
+                { name: "Rare Thick Noodles", price: 40 },
+                { name: "Square Noodles", price: 30 },
+                { name: "Ultra-thin Rice Noodles", price: 30 }
+              ]
+            },
+            {
+              name: "Top Old Fire Health Rich White Soup",
+              basePrice: 250,
+              brothOptions: [
+              { name: "Chicken Leg", price: 0 },
+              { name: "Sous Vide Char Siu (Dine-in Only)", price: 0 },
+              { name: "Chicken Rib Stew", price: 0 },
+              { name: "Dumpling Soup", price: 0 },
+              { name: "Offal", price: 0 },
+              { name: "Extra Purchase", price: 50 }
+              ],
+              noodlesOptions: [
+                { name: "Rare Thick Noodles", price: 40 },
+                { name: "Square Noodles", price: 30 },
+                { name: "Ultra-thin Rice Noodles", price: 30 }
+              ]
+            },
+            {
+              name: "New Spicy Rich Chicken White Soup",
+              basePrice: 200,
+              brothOptions: [
+              { name: "Chicken Leg", price: 0 },
+              { name: "Sous Vide Char Siu (Dine-in Only)", price: 0 },
+              { name: "Chicken Rib Stew", price: 0 },
+              { name: "Dumpling Soup", price: 0 },
+              { name: "Offal", price: 0 },
+              { name: "Extra Purchase", price: 50 }
+              ],
+              noodlesOptions: [
+                { name: "Rare Thick Noodles", price: 40 },
+                { name: "Square Noodles", price: 30 },
+                { name: "Ultra-thin Rice Noodles", price: 30 }
+              ]
+            },
+            {
+              name: "Pepper Pork Belly Chicken White Soup",
+              basePrice: 230,
+              brothOptions: [
+              { name: "Chicken Leg", price: 0 },
+              { name: "Sous Vide Char Siu (Dine-in Only)", price: 0 },
+              { name: "Chicken Rib Stew", price: 0 },
+              { name: "Dumpling Soup", price: 0 },
+              { name: "Offal", price: 0 },
+              { name: "Extra Purchase", price: 50 }
+              ],
+              noodlesOptions: [
+                { name: "Rare Thick Noodles", price: 40 },
+                { name: "Square Noodles", price: 30 },
+                { name: "Ultra-thin Rice Noodles", price: 30 }
+              ]
+            },
+            {
+              name: "Multicolor Vegetable Soup (Healthy Vegetarian)",
+              basePrice: 100,
+              brothOptions: [
+              { name: "vegetable", price: 0 },
+              { name: "Extra Purchase", price: 50 }
+              ],
+              noodlesOptions: [
+                { name: "Rare Thick Noodles", price: 40 },
+                { name: "Square Noodles", price: 30 },
+                { name: "Ultra-thin Rice Noodles", price: 30 }
+              ]
+            }
+          ],
+          other: [
+            { name: "Chicken Oil Rice", price: 30 },
+            { name: "Chicken Oil Noodles", price: 30 },
+            { name: "White Rice", price: 20 },
+            { name: "Sugar Heart Egg", price: 30 },
+            { name: "Black Garlic Chicken Oil Rice", price: 40 },
+            { name: "Spicy Chicken Oil Noodles", price: 40 },
+            { name: "Japanese Style Cold Noodles", price: 40 },
+            { name: "Sesame Oil Noodles", price: 40 },
+            { name: "Boiled Vegetables", price: 40 },
+            { name: "Chicken Oil Bean Sprouts", price: 40 },
+            { name: "Boiled Cabbage", price: 40 },
+            { name: "Crispy Fried Century Egg", price: 40 },
+            { name: "Five Spice Tofu", price: 40 },
+            { name: "Beigang Rice Blood", price: 40 },
+            { name: "Traditional Rainbow Shrimp Crackers", price: 40 },
+            { name: "Yunlin Thick Oil Tofu", price: 40 },
+            { name: "Passionfruit Papaya", price: 40 },
+            { name: "Pickled Lotus Root", price: 40 },
+            { name: "Raw Cabbage Salad", price: 40 },
+            { name: "Ginger Tomato", price: 40 },
+            { name: "Spicy Beef Oil Rice", price: 40 },
+            { name: "Japanese Fried Ham", price: 40 },
+            { name: "Sweet Bamboo Shoots", price: 40 },
+            { name: "Peeled Chili Steamed Egg", price: 50 },
+            { name: "Keelung Fried Tempura", price: 50 },
+            { name: "Fried Soft Squid Roll", price: 50 },
+            { name: "Legendary Korean Kimchi", price: 50 },
+            { name: "Char Siu Golden Pork Bowl", price: 70 },
+            { name: "Sous Vide Silver Pork Bowl", price: 70 },
+            { name: "Spicy Mapo Bowl", price: 70 },
+            { name: "Fried Chicken Rib Stew (Boneless)", price: 70 },
+            { name: "Red Miso Stir-fried Tofu and Bean Sprouts", price: 70 },
+            { name: "Spicy Radish Cake", price: 70 },
+            { name: "Spicy Rice Blood Tofu", price: 70 },
+            { name: "Dawu Mountain Fried Fish Dumplings", price: 70 },
+            { name: "Spicy Mapo Tofu", price: 70 },
+            { name: "Spicy Chicken Oil Dumplings", price: 70 },
+            { name: "Fish Skin Century Egg Tofu", price: 70 },
+            { name: "Spicy Gizzard", price: 80 },
+            { name: "Crispy Tender Shoulder Moon Soft Bone Rib", price: 120 },
+            { name: "Spicy Pork Tongue", price: 120 },
+            { name: "Apple Soda", price: 30 },
+            { name: "Grape Soda", price: 30 },
+            { name: "Salted Sarsaparilla", price: 30 },
+            { name: "Winter Melon Dew", price: 40 },
+            { name: "Beer", price: 100 }
+          ],
+          labels: {
+            spring: "Recommended",
+            soup: "Soup Section",
+            other: "Other Dishes",
+            notice: "※Dining Notice: If you have dietary preferences (e.g., dislike carrots), please inform us when ordering. Dining time is limited to 1 hour during peak hours. Please return your dishes to the collection area after eating.",
+            cartNotice: "Please show this screen to the staff and pay in cash."
+          }
+        },
+        ja: {
+          spring: [
+            { name: "熟成スパイスカレーライス+唐揚げ", price: 200 },
+            { name: "熟成スパイスカレーライス+フライドハム", price: 200 },
+            { name: "春寅の毛沢東スペアリブライス", price: 180 },
+            { name: "キムチ炒め豚肉ご飯", price: 180 },
+            { name: "肉たっぷり手撕り豚肉ご飯", price: 160 },
+            { name: "薄脆柔らか肩ムーンソフトボーンリブライス", price: 160 },
+            { name: "低温泡菜低温調理チャーシューライス", price: 160 },
+            { name: "炙り麻辣豚舌ライス", price: 160 },
+            { name: "濃厚鶏スープご飯", price: 120 },
+            { name: "特濃鶏スープラーメン", price: 270 },
+            { name: "鶏スープ海鮮二郎ラーメン", price: 270 },
+            { name: "熟成スパイス濃厚スープカレーヌードル", price: 210 },
+            { name: "火辣辣牛豚辛炒め麺", price: 170 },
+            { name: "和風辛油冷麺", price: 170 },
+            { name: "担担ゴマ辛麺", price: 130 },
+            { name: "赤味噌担担スープ麺", price: 130 },
+            { name: "特濃黒ニンニク麺", price: 130 },
+            { name: "紅油胡椒香麺", price: 130 }
+          ],
+          soup: [
+            {
+              name: "金鶏薬膳スープ",
+              basePrice: 120,
+              brothOptions: [
+              { name: "鶏もも", price: 0 },
+              { name: "低温調理チャーシュー(店内のみ)", price: 0 },
+              { name: "鶏リブシチュー", price: 0 },
+              { name: "餃子スープ", price: 0 },
+              { name: "モツ", price: 0 },
+              { name: "購入に追加する", price: 50 }
+              ],
+              noodlesOptions: [
+                { name: "幻の太麺", price: 40 },
+                { name: "四角麺", price: 30 },
+                { name: "極細米粉", price: 30 }
+              ]
+            },
+            {
+                name: "厚鶏白湯",
+                basePrice: 160,
+                brothOptions: [
+                { name: "鶏もも", price: 0 },
+                { name: "低温調理チャーシュー(店内のみ)", price: 0 },
+                { name: "鶏リブシチュー", price: 0 },
+                { name: "餃子スープ", price: 0 },
+                { name: "モツ", price: 0 },
+                { name: "購入に追加する", price: 50 }
+                ],
+                noodlesOptions: [
+                  { name: "幻の太麺", price: 40 },
+                  { name: "四角麺", price: 30 },
+                  { name: "極細米粉", price: 30 }
+                ]
+              },
+            {
+              name: "熟成醤油厚鶏白湯",
+              basePrice: 170,
+              brothOptions: [
+              { name: "鶏もも", price: 0 },
+              { name: "低温調理チャーシュー(店内のみ)", price: 0 },
+              { name: "鶏リブシチュー", price: 0 },
+              { name: "餃子スープ", price: 0 },
+              { name: "モツ", price: 0 },
+              { name: "購入に追加する", price: 50 }
+              ],
+              noodlesOptions: [
+                { name: "幻の太麺", price: 40 },
+                { name: "四角麺", price: 30 },
+                { name: "極細米粉", price: 30 }
+              ]
+            },
+            {
+              name: "濃香魚介鶏白湯 2.0",
+              basePrice: 190,
+              brothOptions: [
+              { name: "鶏もも", price: 0 },
+              { name: "低温調理チャーシュー(店内のみ)", price: 0 },
+              { name: "鶏リブシチュー", price: 0 },
+              { name: "餃子スープ", price: 0 },
+              { name: "モツ", price: 0 },
+              { name: "購入に追加する", price: 50 }
+              ],
+              noodlesOptions: [
+                { name: "幻の太麺", price: 40 },
+                { name: "四角麺", price: 30 },
+                { name: "極細米粉", price: 30 }
+              ]
+            },
+            {
+              name: "北港冷圧ごま油スープ",
+              basePrice: 160,
+              brothOptions: [
+              { name: "鶏もも", price: 0 },
+              { name: "低温調理チャーシュー(店内のみ)", price: 0 },
+              { name: "鶏リブシチュー", price: 0 },
+              { name: "餃子スープ", price: 0 },
+              { name: "モツ", price: 0 },
+              { name: "購入に追加する", price: 50 }
+              ],
+              noodlesOptions: [
+                { name: "幻の太麺", price: 40 },
+                { name: "四角麺", price: 30 },
+                { name: "極細米粉", price: 30 }
+              ]
+            },
+            {
+              name: "濃厚鶏白ごま油スープ",
+              basePrice: 190,
+              brothOptions: [
+              { name: "鶏もも", price: 0 },
+              { name: "低温調理チャーシュー(店内のみ)", price: 0 },
+              { name: "鶏リブシチュー", price: 0 },
+              { name: "餃子スープ", price: 0 },
+              { name: "モツ", price: 0 },
+              { name: "購入に追加する", price: 50 }
+              ],
+              noodlesOptions: [
+                { name: "幻の太麺", price: 40 },
+                { name: "四角麺", price: 30 },
+                { name: "極細米粉", price: 30 }
+              ]
+            },
+            {
+              name: "ニンニク活力スープ",
+              basePrice: 150,
+              brothOptions: [
+              { name: "鶏もも", price: 0 },
+              { name: "低温調理チャーシュー(店内のみ)", price: 0 },
+              { name: "鶏リブシチュー", price: 0 },
+              { name: "餃子スープ", price: 0 },
+              { name: "モツ", price: 0 },
+              { name: "購入に追加する", price: 50 }
+              ],
+              noodlesOptions: [
+                { name: "幻の太麺", price: 40 },
+                { name: "四角麺", price: 30 },
+                { name: "極細米粉", price: 30 }
+              ]
+            },
+            {
+              name: "剥き唐辛子鶏白湯",
+              basePrice: 190,
+              brothOptions: [
+              { name: "鶏もも", price: 0 },
+              { name: "低温調理チャーシュー(店内のみ)", price: 0 },
+              { name: "鶏リブシチュー", price: 0 },
+              { name: "餃子スープ", price: 0 },
+              { name: "モツ", price: 0 },
+              { name: "購入に追加する", price: 50 }
+              ],
+              noodlesOptions: [
+                { name: "幻の太麺", price: 40 },
+                { name: "四角麺", price: 30 },
+                { name: "極細米粉", price: 30 }
+              ]
+            },
+            {
+              name: "頂上老火養生濃白湯",
+              basePrice: 250,
+              brothOptions: [
+              { name: "鶏もも", price: 0 },
+              { name: "低温調理チャーシュー(店内のみ)", price: 0 },
+              { name: "鶏リブシチュー", price: 0 },
+              { name: "餃子スープ", price: 0 },
+              { name: "モツ", price: 0 },
+              { name: "購入に追加する", price: 50 }
+              ],
+              noodlesOptions: [
+                { name: "幻の太麺", price: 40 },
+                { name: "四角麺", price: 30 },
+                { name: "極細米粉", price: 30 }
+              ]
+            },
+            {
+              name: "新香辣濃厚鶏白湯",
+              basePrice: 200,
+              brothOptions: [
+              { name: "鶏もも", price: 0 },
+              { name: "低温調理チャーシュー(店内のみ)", price: 0 },
+              { name: "鶏リブシチュー", price: 0 },
+              { name: "餃子スープ", price: 0 },
+              { name: "モツ", price: 0 },
+              { name: "購入に追加する", price: 50 }
+              ],
+              noodlesOptions: [
+                { name: "幻の太麺", price: 40 },
+                { name: "四角麺", price: 30 },
+                { name: "極細米粉", price: 30 }
+              ]
+            },
+            {
+              name: "胡椒豚肚鶏白湯",
+              basePrice: 230,
+              brothOptions: [
+              { name: "鶏もも", price: 0 },
+              { name: "低温調理チャーシュー(店内のみ)", price: 0 },
+              { name: "鶏リブシチュー", price: 0 },
+              { name: "餃子スープ", price: 0 },
+              { name: "モツ", price: 0 },
+              { name: "購入に追加する", price: 50 }
+              ],
+              noodlesOptions: [
+                { name: "幻の太麺", price: 40 },
+                { name: "四角麺", price: 30 },
+                { name: "極細米粉", price: 30 }
+              ]
+            },
+            {
+              name: "多色時蔬湯（健康素）",
+              basePrice: 100,
+              brothOptions: [
+              { name: "野菜", price: 0 },
+              { name: "購入に追加する", price: 50 }
+              ],
+              noodlesOptions: [
+                { name: "幻の太麺", price: 40 },
+                { name: "四角麺", price: 30 },
+                { name: "極細米粉", price: 30 }
+              ]
+            }
+          ],
+          other: [
+            { name: "鶏油ご飯", price: 30 },
+            { name: "鶏油麺", price: 30 },
+            { name: "白ご飯", price: 20 },
+            { name: "糖心卵", price: 30 },
+            { name: "黒ニンニク鶏油ご飯", price: 40 },
+            { name: "香辣鶏油麺", price: 40 },
+            { name: "和風冷麺", price: 40 },
+            { name: "ごま油麺", price: 40 },
+            { name: "ゆで野菜", price: 40 },
+            { name: "鶏油もやし", price: 40 },
+            { name: "ゆでキャベツ", price: 40 },
+            { name: "香酥炸皮蛋", price: 40 },
+            { name: "五香豆腐", price: 40 },
+            { name: "北港の米血", price: 40 },
+            { name: "古早味彩虹蝦餅", price: 40 },
+            { name: "雲林特厚油豆腐", price: 40 },
+            { name: "百香木瓜", price: 40 },
+            { name: "梅漬け蓮根", price: 40 },
+            { name: "生キャベツサラダ", price: 40 },
+            { name: "生姜トマト", price: 40 },
+            { name: "香辣牛油丁ご飯", price: 40 },
+            { name: "日式フライドハム", price: 40 },
+            { name: "筍干の甘露煮", price: 40 },
+            { name: "剥皮辣椒蒸し卵", price: 50 },
+            { name: "基隆の炸天婦羅", price: 50 },
+            { name: "炸軟絲イカロール", price: 50 },
+            { name: "伝説の韓国キムチ", price: 50 },
+            { name: "叉燒金豚丼", price: 70 },
+            { name: "低温調理銀豚丼", price: 70 },
+            { name: "小辣辣麻婆丼", price: 70 },
+            { name: "炸鶏排骨酥(無骨)", price: 70 },
+            { name: "赤味噌肉炒め豆芽", price: 70 },
+            { name: "麻辣大根餅", price: 70 },
+            { name: "麻辣米血豆腐", price: 70 },
+            { name: "大武山炸魚餃", price: 70 },
+            { name: "小辣辣麻婆豆腐", price: 70 },
+            { name: "香辣鶏油餃", price: 70 },
+            { name: "小魚皮蛋豆腐", price: 70 },
+            { name: "麻辣胗心", price: 80 },
+            { name: "薄脆柔らか肩ムーンソフトボーンリブ", price: 120 },
+            { name: "麻辣喇豚舌", price: 120 },
+            { name: "アップルソーダ", price: 30 },
+            { name: "グレープソーダ", price: 30 },
+            { name: "塩サルサパリラ", price: 30 },
+            { name: "冬瓜露", price: 40 },
+            { name: "ビール", price: 100 }
+          ],
+          labels: {
+            spring: "おすすめ",
+            soup: "スープセクション",
+            other: "その他の料理",
+            notice: "※食事の注意：食べ物の好み（例えば、にんじんが嫌いなど）がある場合は、注文時にお知らせください。ピーク時には食事時間は1時間に制限されています。食後は食器を回収エリアに戻してください。",
+            cartNotice: "この画面をスタッフに見せて現金で支払ってください。"
+          }
+        },
+        ko: {
+          spring: [
+            { name: "숙성 향신료 카레밥 + 가라아게", price: 200 },
+            { name: "숙성 향신료 카레밥 + 튀김 햄", price: 200 },
+            { name: "춘인 마오쩌둥 갈비밥", price: 180 },
+            { name: "김치 볶음 돼지고기 밥", price: 180 },
+            { name: "고기가 많은 찢은 돼지고기 밥", price: 160 },
+            { name: "바삭바삭한 어깨 달빛 연골 갈비밥", price: 160 },
+            { name: "저온 김치 수비드 차슈 밥", price: 160 },
+            { name: "구운 매운 돼지 혀 밥", price: 160 },
+            { name: "진한 닭고기 수프 밥", price: 120 },
+            { name: "특별 진한 닭고기 수프 라면", price: 270 },
+            { name: "닭고기 수프 해산물 지로 라면", price: 270 },
+            { name: "숙성 향신료 진한 수프 카레 국수", price: 210 },
+            { name: "매운 소고기와 돼지고기 볶음 국수", price: 170 },
+            { name: "일본식 매운 기름 냉국수", price: 170 },
+            { name: "단단 참깨 매운 국수", price: 130 },
+            { name: "적된장 단단 수프 국수", price: 130 },
+            { name: "진한 흑마늘 국수", price: 130 },
+            { name: "홍유 고추향 국수", price: 130 }
+          ],
+          soup: [
+            {
+              name: "황금 닭고기 한방 수프",
+              basePrice: 120,
+              brothOptions: [
+              { name: "닭다리", price: 0 },
+            { name: "수비드 차슈 (내부용)", price: 0 },
+            { name: "닭갈비 스튜", price: 0 },
+            { name: "만두 수프", price: 0 },
+            { name: "내장", price: 0 },
+            { name: "구매에 추가", price: 50 }
+              ],
+              noodlesOptions: [
+                { name: "희귀한 두꺼운 국수", price: 40 },
+                { name: "사각 국수", price: 30 },
+                { name: "초박형 쌀국수", price: 30 }
+              ]
+            },
+            {
+                name: "걸쭉한 닭고기 수프",
+                basePrice: 160,
+                brothOptions: [
+                { name: "닭다리", price: 0 },
+                { name: "수비드 차슈 (내부용)", price: 0 },
+                { name: "닭갈비 스튜", price: 0 },
+                { name: "만두 수프", price: 0 },
+                { name: "내장", price: 0 },
+                { name: "구매에 추가", price: 50 }
+              ],
+              noodlesOptions: [
+                { name: "희귀한 두꺼운 국수", price: 40 },
+                { name: "사각 국수", price: 30 },
+                { name: "초박형 쌀국수", price: 30 }
+              ]
+            },
+            {
+              name: "숙성 간장 진한 닭백탕",
+              basePrice: 170,
+              brothOptions: [
+              { name: "닭다리", price: 0 },
+              { name: "수비드 차슈 (내부용)", price: 0 },
+              { name: "닭갈비 스튜", price: 0 },
+              { name: "만두 수프", price: 0 },
+              { name: "내장", price: 0 },
+              { name: "구매에 추가", price: 50 }
+            ],
+            noodlesOptions: [
+              { name: "희귀한 두꺼운 국수", price: 40 },
+              { name: "사각 국수", price: 30 },
+              { name: "초박형 쌀국수", price: 30 }
+            ]
+          },
+          {
+            name: "진한 해산물 닭백탕 2.0",
+            basePrice: 190,
+            brothOptions: [
+            { name: "닭다리", price: 0 },
+            { name: "수비드 차슈 (내부용)", price: 0 },
+            { name: "닭갈비 스튜", price: 0 },
+            { name: "만두 수프", price: 0 },
+            { name: "내장", price: 0 },
+            { name: "구매에 추가", price: 50 }
+            ],
+            noodlesOptions: [
+              { name: "희귀한 두꺼운 국수", price: 40 },
+              { name: "사각 국수", price: 30 },
+              { name: "초박형 쌀국수", price: 30 }
+            ]
+          },
+          {
+            name: "북항 냉압 참기름 수프",
+            basePrice: 160,
+            brothOptions: [
+            { name: "닭다리", price: 0 },
+            { name: "수비드 차슈 (내부용)", price: 0 },
+            { name: "닭갈비 스튜", price: 0 },
+            { name: "만두 수프", price: 0 },
+            { name: "내장", price: 0 },
+            { name: "구매에 추가", price: 50 }
+            ],
+            noodlesOptions: [
+              { name: "희귀한 두꺼운 국수", price: 40 },
+              { name: "사각 국수", price: 30 },
+              { name: "초박형 쌀국수", price: 30 }
+            ]
+          },
+          {
+            name: "진한 닭백 참기름 수프",
+            basePrice: 190,
+            brothOptions: [
+            { name: "닭다리", price: 0 },
+            { name: "수비드 차슈 (내부용)", price: 0 },
+            { name: "닭갈비 스튜", price: 0 },
+            { name: "만두 수프", price: 0 },
+            { name: "내장", price: 0 },
+            { name: "구매에 추가", price: 50 }
+            ],
+            noodlesOptions: [
+              { name: "희귀한 두꺼운 국수", price: 40 },
+              { name: "사각 국수", price: 30 },
+              { name: "초박형 쌀국수", price: 30 }
+            ]
+          },
+          {
+            name: "마늘 에너지 수프",
+            basePrice: 150,
+            brothOptions: [
+            { name: "닭다리", price: 0 },
+            { name: "수비드 차슈 (내부용)", price: 0 },
+            { name: "닭갈비 스튜", price: 0 },
+            { name: "만두 수프", price: 0 },
+            { name: "내장", price: 0 },
+            { name: "구매에 추가", price: 50 }
+            ],
+            noodlesOptions: [
+              { name: "희귀한 두꺼운 국수", price: 40 },
+              { name: "사각 국수", price: 30 },
+              { name: "초박형 쌀국수", price: 30 }
+            ]
+          },
+          {
+            name: "깐 고추 닭백탕",
+            basePrice: 190,
+            brothOptions: [
+            { name: "닭다리", price: 0 },
+            { name: "수비드 차슈 (내부용)", price: 0 },
+            { name: "닭갈비 스튜", price: 0 },
+            { name: "만두 수프", price: 0 },
+            { name: "내장", price: 0 },
+            { name: "구매에 추가", price: 50 }
+            ],
+            noodlesOptions: [
+              { name: "희귀한 두꺼운 국수", price: 40 },
+              { name: "사각 국수", price: 30 },
+              { name: "초박형 쌀국수", price: 30 }
+            ]
+          },
+          {
+            name: "정상 노화 건강 농백탕",
+            basePrice: 250,
+            brothOptions: [
+            { name: "닭다리", price: 0 },
+            { name: "수비드 차슈 (내부용)", price: 0 },
+            { name: "닭갈비 스튜", price: 0 },
+            { name: "만두 수프", price: 0 },
+            { name: "내장", price: 0 },
+            { name: "구매에 추가", price: 50 }
+            ],
+            noodlesOptions: [
+              { name: "희귀한 두꺼운 국수", price: 40 },
+              { name: "사각 국수", price: 30 },
+              { name: "초박형 쌀국수", price: 30 }
+            ]
+          },
+          {
+            name: "새로운 매운 진한 닭백탕",
+            basePrice: 200,
+            brothOptions: [
+            { name: "닭다리", price: 0 },
+            { name: "수비드 차슈 (내부용)", price: 0 },
+            { name: "닭갈비 스튜", price: 0 },
+            { name: "만두 수프", price: 0 },
+            { name: "내장", price: 0 },
+            { name: "구매에 추가", price: 50 }
+            ],
+            noodlesOptions: [
+              { name: "희귀한 두꺼운 국수", price: 40 },
+              { name: "사각 국수", price: 30 },
+              { name: "초박형 쌀국수", price: 30 }
+            ]
+          },
+          {
+            name: "후추 돼지 배 닭백탕",
+            basePrice: 230,
+            brothOptions: [
+            { name: "닭다리", price: 0 },
+            { name: "수비드 차슈 (내부용)", price: 0 },
+            { name: "닭갈비 스튜", price: 0 },
+            { name: "만두 수프", price: 0 },
+            { name: "내장", price: 0 },
+            { name: "구매에 추가", price: 50 }
+            ],
+            noodlesOptions: [
+              { name: "희귀한 두꺼운 국수", price: 40 },
+              { name: "사각 국수", price: 30 },
+              { name: "초박형 쌀국수", price: 30 }
+            ]
+          },
+          {
+            name: "다색 야채 수프 (건강 채식)",
+            basePrice: 100,
+            brothOptions: [
+            { name: "채소", price: 0 },
+            { name: "구매에 추가", price: 50 }
+            ],
+            noodlesOptions: [
+              { name: "희귀한 두꺼운 국수", price: 40 },
+              { name: "사각 국수", price: 30 },
+              { name: "초박형 쌀국수", price: 30 }
+            ]
+          }
+        ],
+        other: [
+          { name: "닭기름 밥", price: 30 },
+          { name: "닭기름 국수", price: 30 },
+          { name: "흰 쌀밥", price: 20 },
+          { name: "설탕심란", price: 30 },
+          { name: "흑마늘 닭기름 밥", price: 40 },
+          { name: "매운 닭기름 국수", price: 40 },
+          { name: "일본식 냉국수", price: 40 },
+          { name: "참기름 국수", price: 40 },
+          { name: "삶은 야채", price: 40 },
+          { name: "닭기름 콩나물", price: 40 },
+          { name: "삶은 양배추", price: 40 },
+          { name: "바삭한 튀김 피단", price: 40 },
+          { name: "오향 두부", price: 40 },
+          { name: "베이강 쌀피", price: 40 },
+          { name: "전통 무지개 새우 크래커", price: 40 },
+          { name: "운림 두꺼운 기름 두부", price: 40 },
+          { name: "백향 과일 파파야", price: 40 },
+          { name: "절임 연근", price: 40 },
+          { name: "생 양배추 샐러드", price: 40 },
+          { name: "생강 토마토", price: 40 },
+          { name: "매운 소고기 기름 밥", price: 40 },
+          { name: "일본식 튀김 햄", price: 40 },
+          { name: "단맛 대나무순", price: 40 },
+          { name: "깐 고추 찜 계란", price: 50 },
+          { name: "기룡 튀김 템푸라", price: 50 },
+          { name: "튀김 부드러운 오징어 롤", price: 50 },
+          { name: "전설의 한국 김치", price: 50 },
+          { name: "차슈 황금 돼지 덮밥", price: 70 },
+          { name: "수비드 은돼지 덮밥", price: 70 },
+          { name: "매운 마파 덮밥", price: 70 },
+          { name: "튀김 닭갈비 스튜 (뼈 없음)", price: 70 },
+          { name: "적된장 볶음 두부와 콩나물", price: 70 },
+          { name: "매운 무떡", price: 70 },
+          { name: "매운 쌀피 두부", price: 70 },
+          { name: "다우산 튀김 생선 만두", price: 70 },
+          { name: "매운 마파 두부", price: 70 },
+          { name: "매운 닭기름 만두", price: 70 },
+          { name: "생선 껍질 피단 두부", price: 70 },
+          { name: "매운 지느러미", price: 80 },
+          { name: "바삭한 어깨 달빛 연골 갈비", price: 120 },
+          { name: "매운 돼지 혀", price: 120 },
+          { name: "사과 소다", price: 30 },
+          { name: "포도 소다", price: 30 },
+          { name: "소금 사르사파릴라", price: 30 },
+          { name: "동과 노", price: 40 },
+          { name: "맥주", price: 100 }
+        ],
+        labels: {
+          spring: "추천",
+          soup: "수프 섹션",
+          other: "기타 요리",
+          notice: "※식사 주의사항: 식사 선호도가 있는 경우 (예: 당근을 싫어함), 주문 시 알려주세요. 피크 시간에는 식사 시간이 1시간으로 제한됩니다. 식사 후에는 식기를 수거 구역에 반납해주세요.",
+          cartNotice: "이 화면을 직원에게 보여주고 현금으로 결제하세요."
+        }
+      }
+    };
+      
+
+    
+    
+    let currentLanguage = 'zh'; // 默認語言
+    let cart = [];
+    let currentCategory = 'spring'; // 默認分類
+
+    document.addEventListener('DOMContentLoaded', () => {
+        showCategory('spring'); // 預設顯示主打推薦類別
+        updateCartIcon();
+    });
+
+    function changeLanguage() {
+        const languageSelect = document.getElementById('language');
+        currentLanguage = languageSelect.value;
+        showCategory(currentCategory);
+    }
+
+    function showCategory(category) {
+        currentCategory = category;
+        const menuContent = document.getElementById('menu-content');
+        menuContent.innerHTML = '';
+        const items = menuData[currentLanguage][currentCategory];
+        items.forEach(item => {
+            const menuItem = document.createElement('div');
+            menuItem.className = 'menu-item';
+
+            let optionsHtml = '';
+            if (currentCategory === 'soup') {
+                optionsHtml += `
+                    <div>${translate('肉品選擇')}:
+                        <select onchange="updateOptions('${item.name}', this.value, 'broth')">
+                            <option value="0">${translate('不加購')}</option>
+                            ${item.brothOptions.map(option => `<option value="${option.price}">${option.name} (+$${option.price})</option>`).join('')}
+                        </select>
+                    </div>
+                    <div>${translate('麵類選擇')}:
+                        <select onchange="updateOptions('${item.name}', this.value, 'noodles')">
+                            <option value="0">${translate('不加購')}</option>
+                            ${item.noodlesOptions.map(option => `<option value="${option.price}">${option.name} (+$${option.price})</option>`).join('')}
+                        </select>
+                    </div>
+                `;
+            }
+
+            menuItem.innerHTML = `
+                <div class="item-info">
+                    <div class="item-name">${item.name}</div>
+                    <div class="item-price">$${item.basePrice || item.price}</div>
+                    ${optionsHtml}
+                </div>
+                <div class="item-controls">
+                    <div class="quantity-control">
+                        <button onclick="updateQuantity('${item.name}', '${currentCategory}', -1)">-</button>
+                        <span id="quantity-${item.name}">0</span>
+                        <button onclick="updateQuantity('${item.name}', '${currentCategory}', 1)">+</button>
+                    </div>
+                </div>
+            `;
+            menuContent.appendChild(menuItem);
+        });
+    }
+
+    function translate(text) {
+        const translations = {
+            '肉品選擇': { 'zh': '肉品選擇', 'ja': '肉の選択', 'ko': '고기 선택' },
+            '麵類選擇': { 'zh': '麵類選擇', 'ja': '麺の選択', 'ko': '면 선택' },
+            '不加購': { 'zh': '不加購', 'ja': '追加なし', 'ko': '추가 없음' }
+        };
+        return translations[text][currentLanguage] || text;
+    }
+
+    function updateQuantity(name, category, change) {
+        const item = cart.find(i => i.name === name && i.category === category);
+        if (item) {
+            item.quantity += change;
+            if (item.quantity <= 0) {
+                cart = cart.filter(i => i.name !== name || i.category !== category);
+            }
+        } else if (change > 0) {
+            cart.push({ name, category, quantity: change, brothPrice: 0, noodlesPrice: 0 });
+        }
+        document.getElementById(`quantity-${name}`).textContent = cart.find(i => i.name === name && i.category === category)?.quantity || 0;
+        updateCartTotal();
+        updateCartIcon();
+    }
+
+    function updateOptions(name, value, type) {
+        const item = cart.find(i => i.name === name);
+        if (item) {
+            if (type === 'broth') {
+                item.brothPrice = parseFloat(value);
+            } else if (type === 'noodles') {
+                item.noodlesPrice = parseFloat(value);
+            }
+            updateCartTotal();
+        }
+    }
+
+    function updateCartTotal() {
+        const total = cart.reduce((sum, item) => {
+            const menuItem = menuData[currentLanguage][item.category].find(i => i.name === item.name);
+            const itemTotal = (menuItem.basePrice || menuItem.price) + item.brothPrice + item.noodlesPrice;
+            return sum + (itemTotal * item.quantity);
+        }, 0);
+        document.getElementById('cart-total').textContent = `總計: $${total}`;
+    }
+
+    function toggleCart() {
+        const cartModal = document.getElementById('cart-modal');
+        cartModal.style.display = cartModal.style.display === 'none' ? 'block' : 'none';
+        renderCartItems();
+    }
+
+    function renderCartItems() {
+        const cartItemsContainer = document.getElementById('cart-items');
+        cartItemsContainer.innerHTML = '';
+        cart.forEach(item => {
+            const menuItem = menuData[currentLanguage][item.category].find(i => i.name === item.name);
+            const itemTotal = (menuItem.basePrice || menuItem.price) + item.brothPrice + item.noodlesPrice;
+            const cartItem = document.createElement('div');
+            cartItem.className = 'cart-item';
+            cartItem.innerHTML = `
+                <div>${item.name} (${item.category})</div>
+                <div>${item.quantity} x $${itemTotal}</div>
+                <button onclick="removeCartItem('${item.name}', '${item.category}')">刪除</button>
+            `;
+            cartItemsContainer.appendChild(cartItem);
+        });
+    }
+
+    function removeCartItem(name, category) {
+        cart = cart.filter(item => item.name !== name || item.category !== category);
+        renderCartItems();
+        updateCartTotal();
+        updateCartIcon();
+    }
+
+    function updateCartIcon() {
+        const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+        const cartIconBadge = document.getElementById('cart-icon-badge');
+        if (cartCount > 0) {
+            cartIconBadge.textContent = cartCount;
+            cartIconBadge.style.display = 'flex';
+        } else {
+            cartIconBadge.style.display = 'none';
+        }
+    }
+</script>
+        
+  </body>
+  </html>
+  
